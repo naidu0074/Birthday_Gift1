@@ -1,0 +1,265 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#24123d" />
+  <title>Happy Birthday!</title>
+  <style>
+    :root {
+      --pink: #ff75a0;
+      --gold: #ffd166;
+      --cream: #fff8f0;
+      --night: #24123d;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      overflow-x: hidden;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+      color: var(--cream);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 15%, rgba(255,117,160,.28), transparent 35%),
+        radial-gradient(ellipse at 85% 80%, rgba(117,103,255,.28), transparent 38%),
+        linear-gradient(135deg, #160d2b, #392052 55%, #1b153c);
+    }
+    #confetti {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .65;
+      background-image:
+        radial-gradient(2px 2px at 12% 22%, #fff 50%, transparent 60%),
+        radial-gradient(2px 2px at 78% 18%, #ffd166 50%, transparent 60%),
+        radial-gradient(2px 2px at 88% 62%, #fff 50%, transparent 60%),
+        radial-gradient(2px 2px at 24% 82%, #ff9dbb 50%, transparent 60%),
+        radial-gradient(1.5px 1.5px at 54% 9%, #fff 50%, transparent 60%),
+        radial-gradient(2px 2px at 64% 91%, #ffd166 50%, transparent 60%);
+    }
+    .card {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 680px);
+      padding: clamp(28px, 7vw, 58px) clamp(20px, 7vw, 64px);
+      text-align: center;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 30px;
+      background: linear-gradient(145deg, rgba(255,255,255,.15), rgba(255,255,255,.07));
+      box-shadow: 0 24px 80px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.2);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: rise .9s ease both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(22px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #ffd9e5;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+    .cake {
+      display: inline-block;
+      font-size: clamp(3.5rem, 13vw, 5.8rem);
+      line-height: 1.2;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.2));
+      animation: bounce 2.2s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-10px) rotate(3deg); }
+    }
+    h1 {
+      margin: 12px 0 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.5rem, 10vw, 5rem);
+      line-height: 1.04;
+      letter-spacing: -.045em;
+      color: #fff;
+      text-shadow: 0 5px 24px rgba(255,117,160,.35);
+    }
+    h1 span {
+      display: block;
+      color: var(--pink);
+      font-style: italic;
+    }
+    .name {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--gold);
+      font-size: clamp(1.15rem, 4vw, 1.55rem);
+      font-weight: 750;
+    }
+    .message {
+      max-width: 490px;
+      margin: 22px auto 0;
+      color: rgba(255,248,240,.9);
+      font-size: clamp(.98rem, 3.4vw, 1.12rem);
+      line-height: 1.8;
+    }
+    .wish {
+      margin: 18px 0 0;
+      color: #ffd9e5;
+      font-family: Georgia, serif;
+      font-size: clamp(1.1rem, 4vw, 1.35rem);
+      font-style: italic;
+    }
+    button {
+      margin-top: 30px;
+      min-height: 50px;
+      padding: 14px 25px;
+      border: 0;
+      border-radius: 999px;
+      color: #35142f;
+      background: linear-gradient(110deg, #ffd166, #ff9dbb);
+      box-shadow: 0 8px 25px rgba(255,117,160,.25);
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(255,117,160,.38); }
+    button:active { transform: scale(.97); }
+    button:focus-visible { outline: 3px solid white; outline-offset: 4px; }
+    .footer {
+      margin: 25px 0 0;
+      color: rgba(255,255,255,.58);
+      font-size: .78rem;
+      letter-spacing: .06em;
+    }
+    @media (max-width: 420px) {
+      body { padding: 16px 12px; }
+      .card { border-radius: 24px; }
+      .message { line-height: 1.65; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <main class="card">
+    <p class="eyebrow">A little celebration just for you</p>
+    <div class="cake" role="img" aria-label="Birthday cake">🎂</div>
+    <h1>Happy Birthday<span>to You!</span></h1>
+    <div class="name" id="birthdayName">Someone Special ✨</div>
+    <p class="message">
+      May your day be filled with laughter, beautiful surprises, and all the
+      little things that make you smile. Here's to new adventures, lovely
+      memories, and a year that shines as brightly as you do.
+    </p>
+    <p class="wish">Keep smiling, keep shining, and make a wish! 💖</p>
+    <button id="celebrateBtn" type="button">Celebrate! 🎉</button>
+    <p class="footer">MADE WITH LOVE · JUST FOR YOU</p>
+  </main>
+
+  <script>
+    // Personalise the greeting by adding ?name=Alex to the page URL.
+    const params = new URLSearchParams(window.location.search);
+    const recipient = params.get("name");
+    if (recipient && recipient.trim()) {
+      document.getElementById("birthdayName").textContent =
+        `For ${recipient.trim().slice(0, 40)} ✨`;
+      document.title = `Happy Birthday, ${recipient.trim()}!`;
+    }
+
+    // Lightweight canvas confetti animation; no external libraries required.
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    let pieces = [];
+    let animationFrame;
+    const colors = ["#ff75a0", "#ffd166", "#a7e8bd", "#b8a1ff", "#ffffff", "#ff9f68"];
+
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener("resize", resizeCanvas, { passive: true });
+    resizeCanvas();
+
+    function burst(count = 150) {
+      const originX = window.innerWidth / 2;
+      const originY = window.innerHeight * 0.35;
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 6;
+        pieces.push({
+          x: originX, y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 2,
+          size: 4 + Math.random() * 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * Math.PI,
+          spin: (Math.random() - .5) * .22,
+          gravity: .10 + Math.random() * .08,
+          life: 100 + Math.random() * 50
+        });
+      }
+      if (!animationFrame) animate();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      pieces = pieces.filter(p => p.life > 0 && p.y < window.innerHeight + 30);
+      for (const p of pieces) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.vx *= .992;
+        p.rotation += p.spin;
+        p.life--;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * .65);
+        ctx.restore();
+      }
+      if (pieces.length) animationFrame = requestAnimationFrame(animate);
+      else {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      }
+    }
+
+    document.getElementById("celebrateBtn").addEventListener("click", () => burst(220));
+    // A small welcome burst when the page opens.
+    window.addEventListener("load", () => setTimeout(() => burst(120), 350));
+  </script>
+</body>
+</html>
+'''
+
+path = Path("/mnt/data/birthday_wishes.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created: {path}")
